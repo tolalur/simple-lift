@@ -1,21 +1,24 @@
 <template>
     <label class="level">
-        <!-- не маштабируется на несколько подьездов, name должен задаваться програмно, как? в следующей серии(но это не точно)... -->
-        <input type="radio" name="level" :value="level" v-model="internalValue">
+        <input type="radio" :name="buildingIdGroup" :value="level" v-model="internalValue"
+            :checked="internalValue == level">
         <span>{{ level }}</span>
     </label>
 </template>
 
 <script lang="ts" setup>
-import { inject } from 'vue';
+import { computed, inject } from 'vue';
 
 interface Props {
-    level: number
+    level: number,
+    buildingId: number,
 }
-defineProps<Props>();
+const props = defineProps<Props>();
+const buildingIdGroup = computed(() => `level-${props.buildingId}`)
 
-const internalValue = inject('level')
+const internalValue = inject(buildingIdGroup.value)
 </script>
+
 <style>
 .level {
     display: flex;

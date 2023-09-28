@@ -1,11 +1,9 @@
 <template>
-    <div :style="computedShift" class="lift-cab">
-        {{ shift }}
-    </div>
+    <div :style="computedShift" class="lift-cab" :class="{ 'lift-cab--wait': cabWait }" />
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { wait } from '../../utils';
 
 export interface CabProps {
@@ -25,16 +23,18 @@ const computedShift = computed(() => {
     } as Record<string, any>
 })
 
-async function onLiftStop() {
-    wait(1000)
+const cabWait = ref(false)
+const onLiftStop = async () => {
+    cabWait.value = true;
+    await wait(3000)
+    cabWait.value = false;
     emits('cab-ready');
 }
 
 onMounted(() => {
-    addEventListener("transitionend", () => {
-        onLiftStop()
-    });
+    addEventListener("transitionend", onLiftStop);
 });
+
 onUnmounted(() => {
     removeEventListener('transitionend', onLiftStop)
 })
@@ -46,5 +46,9 @@ onUnmounted(() => {
     width: 80px;
     background-color: aquamarine;
     position: absolute;
+}
+
+.lift-cab--wait {
+    background-color: blueviolet;
 }
 </style>

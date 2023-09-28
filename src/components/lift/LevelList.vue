@@ -8,12 +8,16 @@
 import { provide, ref, watch } from 'vue';
 
 const emits = defineEmits(['change'])
+const props = defineProps<{ selectedLevel: number, buildingId: number }>()
+const internalValue = ref<null | number>(null);
 
-const internalValue = ref(null);
-// тоже не масшабируется если будет больше одного компонента
-provide('level', internalValue);
+watch(() => props.selectedLevel, (value) => {
+    internalValue.value = value
+}, { immediate: true })
 
-watch(internalValue, (value) => emits('change', value))
+provide(`level-${props.buildingId}`, internalValue);
+
+watch(internalValue, (value) => emits('change', value),)
 </script>
 
 <style>
